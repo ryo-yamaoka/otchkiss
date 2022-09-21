@@ -3,6 +3,7 @@ package otchkiss
 import (
 	"context"
 	"errors"
+	"os"
 	"testing"
 	"time"
 
@@ -28,8 +29,6 @@ func (tr *testRequesterImpl) Terminate() error {
 }
 
 func TestNew(t *testing.T) {
-	t.Parallel()
-
 	testCases := map[string]struct {
 		requester    Requester
 		wantOtchkiss *Otchkiss
@@ -57,8 +56,7 @@ func TestNew(t *testing.T) {
 	for tn, tc := range testCases {
 		tc := tc
 		t.Run(tn, func(t *testing.T) {
-			t.Parallel()
-
+			os.Args = []string{"dummy"} // Avoid flag parse error
 			ot, err := New(tc.requester)
 			tc.wantError(t, err)
 
