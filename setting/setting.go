@@ -33,10 +33,13 @@ func New(maxConcurrent int, runDuration, warmUpTime time.Duration) (*Setting, er
 
 // FromDefaultConfig returns Setting by flag or default value config.
 func FromDefaultFlag() (*Setting, error) {
-	c := flag.NewFlagSet(os.Args[0], flag.ExitOnError)
+	c := flag.NewFlagSet(os.Args[0], flag.ContinueOnError)
 	maxConcurrent := c.Int("p", defaultMaxConcurrent, "Specify the number of parallels executions (default: 1, it's not concurrently)")
 	runDuration := c.Duration("d", defaultRunDuration, "Running duration, ex: 300s or 5m etc... (default: 1s)")
 	warmUpTime := c.Duration("w", defaultWarmUpTime, "Exclude from results for a given time after startup, ex: 300s or 5m etc... (default: 5s)")
+	if err := c.Parse(os.Args[1:]); err != nil {
+		return nil, err
+	}
 
 	return newSetting(*maxConcurrent, *runDuration, *warmUpTime)
 }

@@ -1,22 +1,70 @@
 package setting
 
 import (
+	"os"
 	"testing"
 	"time"
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 func TestFromDefault(t *testing.T) {
-	t.Parallel()
+	// DO NOT t.Parallel() because avoid os.Args race condition.
 
-	s, err := FromDefaultFlag()
-	require.NoError(t, err)
-	assert.Equal(t, 1, s.MaxConcurrent)
-	assert.Equal(t, 1*time.Second, s.RunDuration)
-	assert.Equal(t, 5*time.Second, s.WarmUpTime)
+	testCases := map[string]struct {
+		args        []string
+		wantError   assert.ErrorAssertionFunc
+		wantSetting *Setting
+	}{
+		"default": {
+			args:      []string{"test"},
+			wantError: assert.NoError,
+			wantSetting: &Setting{
+				MaxConcurrent: 1,
+				RunDuration:   1 * time.Second,
+				WarmUpTime:    5 * time.Second,
+			},
+		},
+		"define args": {
+			args:      []string{"test", "-p", "2", "-d", "2s", "-w", "2s"},
+			wantError: assert.NoError,
+			wantSetting: &Setting{
+				MaxConcurrent: 2,
+				RunDuration:   2 * time.Second,
+				WarmUpTime:    2 * time.Second,
+			},
+		},
+		"ng: no unit": {
+			args:      []string{"test", "-p", "2", "-d", "2", "-w", "2"},
+			wantError: assert.Error,
+		},
+		"ng: invalid p": {
+			args:      []string{"test", "-p", "0", "-d", "2s", "-w", "2s"},
+			wantError: assert.Error,
+		},
+		"ng: invalid d": {
+			args:      []string{"test", "-p", "2", "-d", "0s", "-w", "2s"},
+			wantError: assert.Error,
+		},
+		"ng: invalid w": {
+			args:      []string{"test", "-p", "2", "-d", "2s", "-w", "-1s"},
+			wantError: assert.Error,
+		},
+	}
+
+	for tn, tc := range testCases {
+		tc := tc
+		t.Run(tn, func(t *testing.T) {
+			// DO NOT t.Parallel() because avoid os.Args race condition.
+
+			os.Args = tc.args
+			s, err := FromDefaultFlag()
+			tc.wantError(t, err)
+			diff := cmp.Diff(tc.wantSetting, s)
+			assert.Empty(t, diff)
+		})
+	}
 }
 
 func TestNewSetting(t *testing.T) {
