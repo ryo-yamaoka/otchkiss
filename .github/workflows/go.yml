@@ -1,0 +1,43 @@
+name: Go
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+
+  build118:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Go
+      uses: actions/setup-go@v3
+      with:
+        go-version: 1.18
+    - name: Tools
+      run: make install-tools
+    - name: Lint
+      run: make lint
+    - name: Test
+      run: make test
+    - name: Run sample
+      run: go run ./sample/...
+
+  build119:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Go
+      uses: actions/setup-go@v3
+      with:
+        go-version: 1.19
+    - name: Tools
+      run: make install-tools
+    - name: Lint
+      run: make lint
+    - name: Test
+      run: make test
+    - name: Run sample
+      run: go run ./sample/...
