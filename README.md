@@ -41,6 +41,16 @@ $ go run ./sample/...
 * 90th percentile: 11.0 ms
 ```
 
+### Command line options
+
+When you useing `otchkiss.New()` or `setting.FromDefaultFlag()`, will be parsed following command line parameters.
+
+This eliminates the need to write the parsing process.
+
+* `-p`: Specify the number of parallels executions (default: `1`, it's not concurrently)
+* `-d`: Running duration, ex: 300s or 5m etc... (default: `1s`)
+* `-w`: Exclude from results for a given time after startup, ex: 300s or 5m etc... (default: `5s`)
+
 ## Development
 
 * Lint: `make lint`
