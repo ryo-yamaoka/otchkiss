@@ -40,7 +40,8 @@ func TestNew(t *testing.T) {
 				Requester: &testRequesterImpl{},
 				Setting: &setting.Setting{
 					MaxConcurrent: 1,
-					RunDuration:   1 * time.Second,
+					MaxRPS:        1,
+					RunDuration:   5 * time.Second,
 					WarmUpTime:    5 * time.Second,
 				},
 			},

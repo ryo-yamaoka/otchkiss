@@ -5,14 +5,16 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"sync"
 	"text/template"
 	"time"
 
 	"github.com/ryo-yamaoka/otchkiss/result"
+	"github.com/ryo-yamaoka/otchkiss/sema"
 	"github.com/ryo-yamaoka/otchkiss/setting"
 
 	humanize "github.com/dustin/go-humanize"
-	"golang.org/x/sync/semaphore"
+	"go.uber.org/ratelimit"
 )
 
 // Requester defines the behavior of the request that Otchkiss performs.
@@ -40,9 +42,13 @@ type Otchkiss struct {
 
 // New returns Otchkiss instance with default setting.
 // By default, the following three command line arguments are parsed and set.
-//   -p: Specify the number of parallels executions (default: 1, it's not concurrently)
-//   -d: Running duration, ex: 300s or 5m etc... (default: 1s)
-//   -w: Exclude from results for a given time after startup, ex: 300s or 5m etc... (default: 5s)
+//
+//	-p: Specify the number of parallels executions. 0 means unlimited (default: 1, it's not concurrently)
+//	-d: Running duration, ex: 300s or 5m etc... (default: 5s)
+//	-w: Exclude from results for a given time after startup, ex: 300s or 5m etc... (default: 5s)
+//	-r: Specify the max request per second. 0 means unlimited (default: 1)
+//
+// Note: -p or -r, whichever is smaller blocks the request.
 func New(requester Requester) (*Otchkiss, error) {
 	s, err := setting.FromDefaultFlag()
 	if err != nil {
@@ -82,10 +88,10 @@ func new(requester Requester, setting *setting.Setting, r *result.Result) (*Otch
 }
 
 // Start run Otchkiss load testing, and the test follows these steps.
-//   1. Run Init()
-//   2. Start RequestOne() repeatedly as warm up (it will NOT count as Result)
-//   3. Start RequestOne() repeatedly as actual test (it will count as Result)
-//   4. End RequestOne() execute and run Terminate()
+//  1. Run Init()
+//  2. Start RequestOne() repeatedly as warm up (it will NOT count as Result)
+//  3. Start RequestOne() repeatedly as actual test (it will count as Result)
+//  4. End RequestOne() execute and run Terminate()
 func (ot *Otchkiss) Start(ctx context.Context) error {
 	if err := ot.Requester.Init(); err != nil {
 		return fmt.Errorf("failed to initialize requester: %w", err)
@@ -100,12 +106,26 @@ func (ot *Otchkiss) Start(ctx context.Context) error {
 		close(warmUp)
 	}()
 
-	sem := semaphore.NewWeighted(int64(ot.Setting.MaxConcurrent))
+	sem := sema.NewWeighted(int64(ot.Setting.MaxConcurrent))
+	rl := ratelimit.NewUnlimited()
+	maxRPS := ot.Setting.MaxRPS
+	if maxRPS != 0 {
+		rl = ratelimit.New(maxRPS, ratelimit.Per(1*time.Second))
+	}
+
+	var wg sync.WaitGroup
 	for {
-		if err := sem.Acquire(ctx, 1); err != nil {
-			return ot.Requester.Terminate()
+		if ctx.Err() != nil {
+			break
 		}
+		if err := sem.Acquire(ctx, 1); err != nil {
+			break
+		}
+		rl.Take()
+
+		wg.Add(1)
 		go func() {
+			defer wg.Done()
 			start := time.Now()
 			err := ot.Requester.RequestOne(ctx)
 			elapsed := time.Since(start) // Do this before error handling to obtain the most accurate time possible.
@@ -124,6 +144,9 @@ func (ot *Otchkiss) Start(ctx context.Context) error {
 			}
 		}()
 	}
+
+	wg.Wait()
+	return ot.Requester.Terminate()
 }
 
 type ReportParams struct {
