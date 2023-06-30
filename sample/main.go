@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/ryo-yamaoka/otchkiss"
+	"github.com/ryo-yamaoka/otchkiss/setting"
 )
 
 type SampleRequester struct{}
@@ -33,7 +34,13 @@ func main() {
 }
 
 func run() error {
-	ot, err := otchkiss.New(&SampleRequester{})
+	st := &setting.Setting{
+		RunDuration:   3 * time.Second,
+		WarmUpTime:    2 * time.Second,
+		MaxConcurrent: 2,
+		MaxRPS:        2,
+	}
+	ot, err := otchkiss.FromConfig(&SampleRequester{}, st, 1_000_000)
 	if err != nil {
 		return fmt.Errorf("init error: %w", err)
 	}

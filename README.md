@@ -21,20 +21,20 @@ See [./sample/main.go](./sample/main.go) for a sample.
 $ go run ./sample/...
 
 [Setting]
-* warm up time:   5s
-* duration:       1s
-* max concurrent: 1
+* warm up time:   2s
+* duration:       3s
+* max concurrent: 2
 
 [Request]
-* total:      90
-* succeeded:  90
+* total:      7
+* succeeded:  7
 * failed:     0
 * error rate: 0 %
-* RPS:        90
+* RPS:        2.3
 
 [Latency]
-* max: 11.0 ms
-* min: 10.0 ms
+* max: 11.1 ms
+* min: 10.6 ms
 * avg: 10.9 ms
 * med: 11.0 ms
 * 99th percentile: 11.0 ms
@@ -47,9 +47,10 @@ When you useing `otchkiss.New()` or `setting.FromDefaultFlag()`, will be parsed 
 
 This eliminates the need to write the parsing process.
 
-* `-p`: Specify the number of parallels executions (default: `1`, it's not concurrently)
-* `-d`: Running duration, ex: 300s or 5m etc... (default: `1s`)
+* `-p`: Specify the number of parallels executions. `0` means unlimited (default: `1`, it's not concurrently)
+* `-d`: Running duration, ex: 300s or 5m etc... (default: `5s`)
 * `-w`: Exclude from results for a given time after startup, ex: 300s or 5m etc... (default: `5s`)
+* `-r`: Specify the max request per second. 0 means unlimited (default: `1`)
 
 ## Development
 
