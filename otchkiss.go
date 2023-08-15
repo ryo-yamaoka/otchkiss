@@ -156,6 +156,7 @@ type ReportParams struct {
 	WarmUpTime    string
 	Duration      string
 	MaxConcurrent int
+	MaxRPS        int
 	ErrorRate     string
 	RPS           string
 	MaxLatency    string
@@ -239,6 +240,7 @@ func (ot *Otchkiss) reportParam() (*ReportParams, error) {
 		WarmUpTime:    ot.Setting.WarmUpTime.String(),
 		Duration:      ot.Setting.RunDuration.String(),
 		MaxConcurrent: ot.Setting.MaxConcurrent,
+		MaxRPS:        ot.Setting.MaxRPS,
 		ErrorRate:     humanize.CommafWithDigits(float64(failed)/float64(total)*100, 1),
 		RPS:           humanize.CommafWithDigits(float64(total)/ot.Setting.RunDuration.Seconds(), 1),
 		MaxLatency:    humanize.CommafWithDigits(max*1000, 1),
