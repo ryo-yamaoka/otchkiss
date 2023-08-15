@@ -5,6 +5,7 @@ const defaultReportTemplate = `
 * warm up time:   {{.WarmUpTime}}
 * duration:       {{.Duration}}
 * max concurrent: {{.MaxConcurrent}}
+* max RPS:        {{.MaxRPS}}
 
 [Request]
 * total:      {{.TotalRequests}}

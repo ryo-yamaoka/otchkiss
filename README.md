@@ -24,18 +24,19 @@ $ go run ./sample/...
 * warm up time:   2s
 * duration:       3s
 * max concurrent: 2
+* max RPS:        2
 
 [Request]
-* total:      7
-* succeeded:  7
+* total:      8
+* succeeded:  8
 * failed:     0
 * error rate: 0 %
-* RPS:        2.3
+* RPS:        2.6
 
 [Latency]
-* max: 11.1 ms
-* min: 10.6 ms
-* avg: 10.9 ms
+* max: 11.0 ms
+* min: 10.7 ms
+* avg: 11.0 ms
 * med: 11.0 ms
 * 99th percentile: 11.0 ms
 * 90th percentile: 11.0 ms
@@ -62,4 +63,5 @@ This eliminates the need to write the parsing process.
 
 [Ryo Yamaoka](https://github.com/ryo-yamaoka)
 
-* [Twitter](https://twitter.com/mountainhill14)
+* [X](https://twitter.com/mountainhill14)
+* [misskey.io](https://misskey.io/@r_yamaoka)
