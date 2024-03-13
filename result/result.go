@@ -2,10 +2,14 @@ package result
 
 import (
 	"errors"
+	"fmt"
+	"os"
 	"sort"
 	"strings"
 	"sync"
 	"sync/atomic"
+
+	"github.com/aybabtme/uniplot/histogram"
 )
 
 const (
@@ -131,4 +135,19 @@ func (r *Result) PercentileLatency(p int) (float64, error) {
 		idx := float64(len(r.latencies)) * (float64(p) / 100)
 		return r.latencies[int(idx-1)], nil
 	}
+}
+
+func (r *Result) Histgram(bins int) (string, error) {
+	if bins < 1 {
+		return "", errors.New("bins must > 0")
+	}
+
+	hist := histogram.Hist(bins, r.latencies)
+
+	// TODO: fix stdout and nil func
+	if err := histogram.Fprint(os.Stdout, hist, nil); err != nil {
+		return "", fmt.Errorf("failed to histogram print: %w", err)
+	}
+
+	return "", nil
 }

@@ -11,26 +11,27 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func genSequence(head, tail int) []float64 {
+	var seq []float64
+
+	switch {
+	case head < tail:
+		for i := head; i <= tail; i++ {
+			seq = append(seq, float64(i))
+		}
+		return seq
+	case head > tail:
+		for i := head; i >= tail; i-- {
+			seq = append(seq, float64(i))
+		}
+		return seq
+	default:
+		return []float64{float64(head)}
+	}
+}
+
 func TestPercentileLatency(t *testing.T) {
 	t.Parallel()
-
-	genSeq := func(head, tail int) []float64 {
-		var seq []float64
-		switch {
-		case head < tail:
-			for i := head; i <= tail; i++ {
-				seq = append(seq, float64(i))
-			}
-			return seq
-		case head > tail:
-			for i := head; i >= tail; i-- {
-				seq = append(seq, float64(i))
-			}
-			return seq
-		default:
-			return []float64{float64(head)}
-		}
-	}
 
 	testCases := map[string]struct {
 		latencies      []float64
@@ -39,25 +40,25 @@ func TestPercentileLatency(t *testing.T) {
 		wantError      assert.ErrorAssertionFunc
 	}{
 		"99p sorted": {
-			latencies:      genSeq(1, 1000),
+			latencies:      genSequence(1, 1000),
 			percentile:     99,
 			wantPercentile: 990,
 			wantError:      assert.NoError,
 		},
 		"99p no sorted": {
-			latencies:      genSeq(1000, 1),
+			latencies:      genSequence(1000, 1),
 			percentile:     99,
 			wantPercentile: 990,
 			wantError:      assert.NoError,
 		},
 		"0p no sorted": {
-			latencies:      genSeq(1000, 1),
+			latencies:      genSequence(1000, 1),
 			percentile:     0,
 			wantPercentile: 1,
 			wantError:      assert.NoError,
 		},
 		"100p no sorted": {
-			latencies:      genSeq(1000, 1),
+			latencies:      genSequence(1000, 1),
 			percentile:     100,
 			wantPercentile: 1000,
 			wantError:      assert.NoError,
@@ -68,12 +69,12 @@ func TestPercentileLatency(t *testing.T) {
 			wantError:  assert.Error,
 		},
 		"under limit": {
-			latencies:  genSeq(1000, 1),
+			latencies:  genSequence(1000, 1),
 			percentile: -1,
 			wantError:  assert.Error,
 		},
 		"exceed limit": {
-			latencies:  genSeq(1000, 1),
+			latencies:  genSequence(1000, 1),
 			percentile: 101,
 			wantError:  assert.Error,
 		},
@@ -91,6 +92,43 @@ func TestPercentileLatency(t *testing.T) {
 			actualPercentile, err := res.PercentileLatency(tc.percentile)
 			tc.wantError(t, err)
 			assert.Equal(t, tc.wantPercentile, actualPercentile)
+		})
+	}
+}
+
+func TestHistgram(t *testing.T) {
+	t.Parallel()
+
+	testCases := map[string]struct {
+		latencies    []float64
+		bins         int
+		wantHistgram string
+		wantError    assert.ErrorAssertionFunc
+	}{
+		"single data": {
+			latencies:    []float64{1},
+			bins:         1,
+			wantHistgram: `1  100%   ▋1`,
+			wantError:    assert.NoError,
+		},
+		"bins under 1": {
+			bins:      0,
+			wantError: assert.Error,
+		},
+	}
+
+	for tn, tc := range testCases {
+		tc := tc
+		t.Run(tn, func(t *testing.T) {
+			t.Parallel()
+
+			res, err := WithCapacity(len(tc.latencies))
+			require.NoError(t, err)
+			res.latencies = tc.latencies
+
+			actualHistgram, err := res.Histgram(tc.bins)
+			tc.wantError(t, err)
+			assert.Equal(t, tc.wantHistgram, actualHistgram)
 		})
 	}
 }
