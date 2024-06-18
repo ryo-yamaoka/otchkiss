@@ -158,3 +158,58 @@ func TestRace(t *testing.T) {
 	assert.Len(t, res.Latencies(), round*2)
 	assert.Len(t, res.Errors(), round)
 }
+
+func TestHistogram(t *testing.T) {
+	t.Parallel()
+
+	testCases := map[string]struct {
+		latencies []float64
+		bins      int
+		width     int
+		want      string
+	}{
+		"normal distribution": {
+			latencies: []float64{
+				0,
+				0.1, 0.1,
+				0.2, 0.2, 0.2,
+				0.3, 0.3, 0.3, 0.3,
+				0.4, 0.4, 0.4, 0.4, 0.4,
+				0.5, 0.5, 0.5, 0.5,
+				0.6, 0.6, 0.6,
+				0.7, 0.7,
+				0.8,
+			},
+			bins:  9,
+			width: 25,
+			want: `0s-88.888888ms             4%   █████▏                      1
+88.888888ms-177.777777ms   8%   ██████████▏                 2
+177.777777ms-266.666666ms  12%  ███████████████▏            3
+266.666666ms-355.555555ms  16%  ████████████████████▏       4
+355.555555ms-444.444444ms  20%  █████████████████████████▏  5
+444.444444ms-533.333333ms  16%  ████████████████████▏       4
+533.333333ms-622.222222ms  12%  ███████████████▏            3
+622.222222ms-711.111111ms  8%   ██████████▏                 2
+711.111111ms-800ms         4%   █████▏                      1
+`,
+		},
+		"empty": {
+			latencies: nil,
+			bins:      0,
+			width:     0,
+			want:      "",
+		},
+	}
+
+	for tn, tc := range testCases {
+		tc := tc
+		t.Run(tn, func(t *testing.T) {
+			t.Parallel()
+
+			r := Result{latencies: tc.latencies}
+			actual, err := r.Histogram(tc.bins, tc.width)
+			assert.NoError(t, err)
+			assert.Equal(t, tc.want, actual)
+		})
+	}
+}

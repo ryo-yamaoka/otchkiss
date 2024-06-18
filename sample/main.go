@@ -12,16 +12,16 @@ import (
 
 type SampleRequester struct{}
 
-func (tr *SampleRequester) Init() error {
+func (sr *SampleRequester) Init() error {
 	return nil
 }
 
-func (tr *SampleRequester) RequestOne(_ context.Context) error {
+func (sr *SampleRequester) RequestOne(_ context.Context) error {
 	time.Sleep(10 * time.Millisecond) // Substitute for HTTP request
 	return nil
 }
 
-func (tr *SampleRequester) Terminate() error {
+func (sr *SampleRequester) Terminate() error {
 	return nil
 }
 
