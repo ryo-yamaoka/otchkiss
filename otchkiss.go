@@ -165,6 +165,7 @@ type ReportParams struct {
 	MedLatency    string
 	Latency99p    string
 	Latency90p    string
+	Histogram     string
 }
 
 // Report outputs result of Otchkiss testing by default template.
@@ -225,6 +226,10 @@ func (ot *Otchkiss) reportParam() (*ReportParams, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to get 50p latency: %w", err)
 	}
+	hist, err := ot.Result.Histogram(9, 25)
+	if err != nil {
+		return nil, fmt.Errorf("failed to generate histogram: %w", err)
+	}
 
 	ll := ot.Result.Latencies()
 	var avg float64
@@ -249,5 +254,6 @@ func (ot *Otchkiss) reportParam() (*ReportParams, error) {
 		MedLatency:    humanize.CommafWithDigits(p50*1000, 1),
 		Latency99p:    humanize.CommafWithDigits(p99*1000, 1),
 		Latency90p:    humanize.CommafWithDigits(p90*1000, 1),
+		Histogram:     hist,
 	}, nil
 }
