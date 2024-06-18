@@ -21,4 +21,7 @@ const defaultReportTemplate = `
 * med: {{.MedLatency}} ms
 * 99th percentile: {{.Latency99p}} ms
 * 90th percentile: {{.Latency90p}} ms
+
+[Histogram]
+{{.Histogram}}
 `

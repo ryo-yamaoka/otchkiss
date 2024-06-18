@@ -1,11 +1,15 @@
 package result
 
 import (
+	"bytes"
 	"errors"
 	"sort"
 	"strings"
 	"sync"
 	"sync/atomic"
+	"time"
+
+	"github.com/aybabtme/uniplot/histogram"
 )
 
 const (
@@ -131,4 +135,21 @@ func (r *Result) PercentileLatency(p int) (float64, error) {
 		idx := float64(len(r.latencies)) * (float64(p) / 100)
 		return r.latencies[int(idx-1)], nil
 	}
+}
+
+func (r *Result) Histogram(bins, width int) (string, error) {
+	r.latenciesMu.Lock()
+	defer r.latenciesMu.Unlock()
+
+	var buf bytes.Buffer
+	hi := histogram.Hist(bins, r.latencies)
+	fn := func(v float64) string {
+		return time.Duration(v * float64(time.Second)).String()
+	}
+
+	if err := histogram.Fprintf(&buf, hi, histogram.Linear(width), fn); err != nil {
+		return "", err
+	}
+
+	return buf.String(), nil
 }

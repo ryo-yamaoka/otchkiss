@@ -15,31 +15,40 @@ Otchkiss is a simple load testing library.
 
 `go get github.com/ryo-yamaoka/otchkiss`
 
-See [./sample/main.go](./sample/main.go) for a sample.
+See [./sample/main.go](./sample/main.go) for a sample implementation.
 
 ```
-$ go run ./sample/...
-
 [Setting]
-* warm up time:   2s
+* warm up time:   3s
 * duration:       3s
-* max concurrent: 2
-* max RPS:        2
+* max concurrent: 0
+* max RPS:        0
 
 [Request]
-* total:      8
-* succeeded:  8
+* total:      25
+* succeeded:  25
 * failed:     0
 * error rate: 0 %
-* RPS:        2.6
+* RPS:        8.3
 
 [Latency]
-* max: 11.0 ms
-* min: 10.7 ms
-* avg: 11.0 ms
-* med: 11.0 ms
-* 99th percentile: 11.0 ms
-* 90th percentile: 11.0 ms
+* max: 800.0 ms
+* min: 1.0 ms
+* avg: 390.0 ms
+* med: 400.0 ms
+* 99th percentile: 700.0 ms
+* 90th percentile: 600.0 ms
+
+[Histogram]
+0s-88.888888ms             4%   █████▏                      1
+88.888888ms-177.777777ms   8%   ██████████▏                 2
+177.777777ms-266.666666ms  12%  ███████████████▏            3
+266.666666ms-355.555555ms  16%  ████████████████████▏       4
+355.555555ms-444.444444ms  20%  █████████████████████████▏  5
+444.444444ms-533.333333ms  16%  ████████████████████▏       4
+533.333333ms-622.222222ms  12%  ███████████████▏            3
+622.222222ms-711.111111ms  8%   ██████████▏                 2
+711.111111ms-800ms         4%   █████▏                      1
 ```
 
 ### Command line options

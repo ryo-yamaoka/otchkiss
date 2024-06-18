@@ -178,7 +178,7 @@ func TestReport(t *testing.T) {
 				WarmUpTime:    3 * time.Second,
 			},
 			templ:      defaultReportTemplate,
-			wantReport: "\n[Setting]\n* warm up time:   3s\n* duration:       2s\n* max concurrent: 1\n* max RPS:        1\n\n[Request]\n* total:      3\n* succeeded:  2\n* failed:     1\n* error rate: 33.3 %\n* RPS:        1.5\n\n[Latency]\n* max: 3,000 ms\n* min: 1,000 ms\n* avg: 2,000 ms\n* med: 1,000 ms\n* 99th percentile: 2,000 ms\n* 90th percentile: 2,000 ms\n",
+			wantReport: "\n[Setting]\n* warm up time:   3s\n* duration:       2s\n* max concurrent: 1\n* max RPS:        1\n\n[Request]\n* total:      3\n* succeeded:  2\n* failed:     1\n* error rate: 33.3 %\n* RPS:        1.5\n\n[Latency]\n* max: 3,000 ms\n* min: 1,000 ms\n* avg: 2,000 ms\n* med: 1,000 ms\n* 99th percentile: 2,000 ms\n* 90th percentile: 2,000 ms\n\n[Histogram]\n1s-1.222222222s            33.3%  █████████████████████████▏  1\n1.222222222s-1.444444444s  0%     ▏                           \n1.444444444s-1.666666666s  0%     ▏                           \n1.666666666s-1.888888888s  0%     ▏                           \n1.888888888s-2.111111111s  33.3%  █████████████████████████▏  1\n2.111111111s-2.333333333s  0%     ▏                           \n2.333333333s-2.555555555s  0%     ▏                           \n2.555555555s-2.777777777s  0%     ▏                           \n2.777777777s-3s            33.3%  █████████████████████████▏  1\n\n",
 			wantError:  assert.NoError,
 		},
 		"user format": {
