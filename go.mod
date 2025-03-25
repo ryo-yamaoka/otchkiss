@@ -1,7 +1,6 @@
 module github.com/ryo-yamaoka/otchkiss
 
-go 1.23
-toolchain go1.24.1
+go 1.23.0
 
 require (
 	github.com/aybabtme/uniplot v0.0.0-20151203143629-039c559e5e7e
