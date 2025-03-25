@@ -2,6 +2,8 @@ module github.com/ryo-yamaoka/otchkiss
 
 go 1.23.0
 
+toolchain go1.24.1
+
 require (
 	github.com/aybabtme/uniplot v0.0.0-20151203143629-039c559e5e7e
 	github.com/dustin/go-humanize v1.0.1
