@@ -1,14 +1,14 @@
 module github.com/ryo-yamaoka/otchkiss
 
-go 1.22.0
+go 1.23.0
 
 require (
 	github.com/aybabtme/uniplot v0.0.0-20151203143629-039c559e5e7e
 	github.com/dustin/go-humanize v1.0.1
-	github.com/google/go-cmp v0.6.0
-	github.com/stretchr/testify v1.9.0
+	github.com/google/go-cmp v0.7.0
+	github.com/stretchr/testify v1.10.0
 	go.uber.org/ratelimit v0.3.1
-	golang.org/x/sync v0.7.0
+	golang.org/x/sync v0.12.0
 )
 
 require (
