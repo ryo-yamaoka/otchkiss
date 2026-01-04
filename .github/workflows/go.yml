@@ -10,7 +10,7 @@ jobs:
   lint-and-tests:
     strategy:
       matrix:
-        go-version: ["1.22", "1.23", "1.24"]
+        go-version: ["1.25", "1.24", "1.23"]
         os: [macos-latest, ubuntu-latest]
       fail-fast: false
     runs-on: ${{ matrix.os }}
