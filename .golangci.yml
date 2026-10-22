@@ -1,0 +1,10 @@
+version: "2"
+
+linters:
+  settings:
+    staticcheck:
+      # Keep the same checks as golangci-lint v1 defaults (staticcheck + gosimple).
+      checks:
+        - all
+        - -ST*
+        - -QF*
