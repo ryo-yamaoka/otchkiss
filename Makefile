@@ -2,7 +2,7 @@
 .DEFAULT_GOAL := help
 
 install-tools:
-	env GOBIN=`pwd`/bin go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+	env GOBIN=`pwd`/bin go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@latest
 
 test: ## Run all test
 	go test ./... -v -race -cover -count=1

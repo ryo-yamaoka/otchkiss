@@ -62,6 +62,14 @@ This eliminates the need to write the parsing process.
 * `-w`: Exclude from results for a given time after startup, ex: 300s or 5m etc... (default: `5s`)
 * `-r`: Specify the max request per second. 0 means unlimited (default: `1`)
 
+### Security note
+
+Otchkiss itself does not handle TLS or certificates.
+However, if your `Requester` sends HTTPS or other TLS requests, certificates are verified by `crypto/x509` of the Go toolchain used to build your binary.
+
+Build your load testing tool with a Go version that is still supported and up to date.
+For example, the compromised eMudhra intermediate CA certificates (October 2026) are rejected only by Go 1.27.3 / 1.26.10 and later; Go 1.25 and earlier do not include this fix.
+
 ## Development
 
 * Lint: `make lint`
