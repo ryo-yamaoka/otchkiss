@@ -64,6 +64,7 @@ func New(requester Requester) (*Otchkiss, error) {
 
 // FromConfig returns Otchkiss instance by user specified setting.
 // Too large values for resultCapacity may cause OOM (FYI: default value is 100M).
+// The setting is not validated, and a negative MaxConcurrent causes Start to panic. Use setting.New to validate it.
 func FromConfig(requester Requester, setting *setting.Setting, resultCapacity int) (*Otchkiss, error) {
 	r, err := result.WithCapacity(resultCapacity)
 	if err != nil {

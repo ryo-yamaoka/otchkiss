@@ -161,6 +161,22 @@ func TestFromConfig(t *testing.T) {
 	}
 }
 
+func TestStart_NegativeMaxConcurrent(t *testing.T) {
+	t.Parallel()
+
+	// FromConfig does not validate the setting, so a negative MaxConcurrent reaches semaphore.NewWeighted and panics.
+	ot, err := FromConfig(&testRequesterImpl{}, &setting.Setting{
+		MaxConcurrent: -1,
+		RunDuration:   1 * time.Second,
+		WarmUpTime:    1 * time.Second,
+	}, 1)
+	require.NoError(t, err)
+
+	assert.PanicsWithValue(t, "semaphore: size < 0", func() {
+		_ = ot.Start(context.Background())
+	})
+}
+
 func TestReport(t *testing.T) {
 	t.Parallel()
 

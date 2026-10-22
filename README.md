@@ -15,7 +15,12 @@ Otchkiss is a simple load testing library.
 
 `go get github.com/ryo-yamaoka/otchkiss`
 
+Requires Go 1.26 or later.
+
 See [./sample/main.go](./sample/main.go) for a sample implementation.
+
+`otchkiss.FromConfig()` does not validate the given `setting.Setting`.
+Use `setting.New()` to get a validated setting, because a negative `MaxConcurrent` causes `Start()` to panic.
 
 ```
 [Setting]
